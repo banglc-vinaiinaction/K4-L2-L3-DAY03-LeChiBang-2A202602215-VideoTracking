@@ -94,9 +94,17 @@ Cấu hình từ `outputs/model_run_config.json`:
 
 **1. MOTA của bạn cao hơn hay thấp hơn IDF1? Nếu MOTA cao mà IDF1 thấp thì điều đó nói gì, và vì sao MOTA không phạt nặng lỗi ID?**
 
-- Trong bản nhãn của tôi: `IDF1 = 0.896` cao hơn `MOTA = 0.785`.
+- Trong bản nhãn của tôi: $\text{IDF1} = 0.896$ cao hơn $\text{MOTA} = 0.785$.
 - Nếu xảy ra trường hợp **MOTA cao mà IDF1 thấp**: Điều này chỉ ra rằng detector/annotation làm tốt việc tìm đúng vật thể trên từng frame đơn lẻ (ít FP/FN), nhưng chất lượng liên kết track (association/identity) bị kém nghiêm trọng (các track bị nhảy ID, tách thành nhiều đoạn nhỏ hoặc tráo đổi cho nhau).
-- **Vì sao MOTA không phạt nặng lỗi ID**: Công thức MOTA là `1 - (FP + FN + IDSW) / GT_total`. Trong đó, mỗi lần tráo ID (ID switch) chỉ bị tính là 1 đơn vị phạt đơn lẻ (`IDSW = 1`) tại đúng frame xảy ra chuyển đổi ID. Một track dài 100 frame bị cắt đôi ở frame 50 chỉ bị phạt 1 điểm IDSW trên tổng số 100 detections (tổn thất MOTA chỉ 1%). Ngược lại, IDF1 đo lường độ trùng khớp định danh toàn cục (`IDTP / (IDTP + 0.5*IDFP + 0.5*IDFN)`), nên khi track bị cắt đôi, toàn bộ 50 frame của nửa sau sẽ bị tính là IDFN/IDFP, khiến IDF1 tụt giảm mạnh. Do đó, MOTA thiên về đo lường detection coverage, trong khi IDF1 phản ánh trung thực tính toàn vẹn của identity qua thời gian.
+- **Vì sao MOTA không phạt nặng lỗi ID**: Công thức MOTA là:
+
+$$\text{MOTA} = 1 - \frac{\text{FP} + \text{FN} + \text{IDSW}}{\text{GT}}$$
+
+  Trong đó, mỗi lần tráo ID (ID switch) chỉ bị tính là 1 đơn vị phạt đơn lẻ ($\text{IDSW} = 1$) tại đúng frame xảy ra chuyển đổi ID. Một track dài 100 frame bị cắt đôi ở frame 50 chỉ bị phạt 1 điểm IDSW trên tổng số 100 detections (tổn thất MOTA chỉ 1%). Ngược lại, IDF1 đo lường độ trùng khớp định danh toàn cục:
+
+$$\text{IDF1} = \frac{2 \cdot \text{IDTP}}{2 \cdot \text{IDTP} + \text{IDFP} + \text{IDFN}}$$
+
+  nên khi track bị cắt đôi, toàn bộ 50 frame của nửa sau sẽ bị tính là IDFN/IDFP, khiến IDF1 tụt giảm mạnh. Do đó, MOTA thiên về đo lường detection coverage, trong khi IDF1 phản ánh trung thực tính toàn vẹn của identity qua thời gian.
 
 **2. ByteTrack control và BoT-SORT + ReID treatment khác nhau thế nào ở IDF1, AssA và IDSW? Dẫn một frame sequence để giải thích treatment tốt hơn, tệ hơn hoặc không đổi đáng kể. Nhắc rõ đây không cô lập causal effect của ReID vì hai tracker implementation khác.**
 
