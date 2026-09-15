@@ -72,6 +72,19 @@ Cấu hình từ `outputs/model_run_config.json`:
 | BoT-SORT + ReID vs gold | 0.763 | 0.711 | 0.820 | 0.872 | 0.900 | 0.792 | 0.860 | 91 | 26 | 2 |
 | ReID vs bạn | 0.612 | 0.550 | 0.689 | 0.776 | 0.837 | 0.666 | 0.736 | 116 | 88 | 0 |
 
+### Thí nghiệm mở rộng (Stretch: Phân tích ngưỡng ReID `appearance_thresh`)
+
+| Cấu hình | HOTA | DetA | AssA | IDF1 | FP | FN | IDSW |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| ReID appearance = 0.70 | 0.763 | 0.711 | 0.820 | 0.900 | 91 | 26 | 2 |
+| ReID appearance = 0.80 | 0.763 | 0.711 | 0.820 | 0.900 | 91 | 26 | 2 |
+| ReID appearance = 0.90 | 0.763 | 0.710 | 0.820 | 0.899 | 91 | 27 | 2 |
+
+- **Nhận xét trade-off**:
+  - Với ngưỡng `0.70` và `0.80`, các chỉ số `HOTA`, `DetA`, `AssA`, `IDF1` và số lỗi `IDSW` giữ nguyên ổn định (`IDF1=0.900`, `IDSW=2`).
+  - Khi tăng ngưỡng khắt khe lên `0.90`, ReID đòi hỏi độ tương đồng ngoại hình cao hơn mới cho phép liên kết, khiến số `FN` tăng từ 26 lên 27 (bỏ sót 1 liên kết ở góc nhìn biến dạng nhẹ) và `IDF1` giảm nhẹ từ 0.900 xuống 0.899.
+  - Điều này chứng minh ngưỡng mặc định `0.80` đã nằm ở điểm cân bằng tối ưu giữa việc chấp nhận biến dạng thị giác do góc quay và tránh gán nhầm đối tượng (identity drift).
+
 ## 5. Phân tích — năm câu hỏi
 
 **1. MOTA của bạn cao hơn hay thấp hơn IDF1? Nếu MOTA cao mà IDF1 thấp thì điều đó nói gì, và vì sao MOTA không phạt nặng lỗi ID?**
